@@ -5,7 +5,7 @@ DATA_DIR='./data'
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
     
-gesture_number=4
+gesture_number=3
 dataset_size=900
 
 cap = cv2.VideoCapture(0)
