@@ -13,14 +13,13 @@ model = model_dict['model']
 
 mp_drawing=mp.solutions.drawing_utils
 mp_hands=mp.solutions.hands
-hands=mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.5, max_num_hands=1)
+hands=mp_hands.Hands(static_image_mode=False, min_detection_confidence=0.5, max_num_hands=1)
 
 keyboard = Controller()
 cap = cv2.VideoCapture(0)
 
 oldPre='9'
 prediction = '9'
-action = 'None'
 
 st.title("Gesture Controller for Spotify")
 temp_frame = st.empty()
@@ -34,31 +33,29 @@ def spotifyController(prediction):
         case 0:
             localKeyboard.press(Key.space)
             localKeyboard.release(Key.space)
-            st.write("Pausing/Playing song")
             
         case 1:
             localKeyboard.press(Key.ctrl_l)
             localKeyboard.press(Key.right)
             localKeyboard.release(Key.ctrl_l)
             localKeyboard.release(Key.right)
-            st.write("Previous song")
             
         case 2:
             localKeyboard.press(Key.ctrl_l)
             localKeyboard.press(Key.left)
             localKeyboard.release(Key.ctrl_l)
             localKeyboard.release(Key.left)
-            st.write("Next song")
 
         case _:
             print("Unknown input")
     
 def gestureRecog(frame):
-    global oldPre, prediction, action
+    global oldPre, prediction
     temp = []
     tempX = []
     tempY = []
     results = hands.process(frame)
+    
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
             mp_drawing.draw_landmarks(
@@ -81,12 +78,14 @@ def gestureRecog(frame):
             
         prediction = model.predict([np.asarray(temp)])    
         action = labels_dict[int(prediction[0])]
+        if int(prediction[0]) != oldPre:
+            spotifyController(int(prediction[0]))
+            oldPre = int(prediction[0])
         
         cv2.rectangle(frame, (x1,y1-10), (x2,y2),(0,0,0),4)
         cv2.putText(frame, action, (x1,y1), cv2.FONT_HERSHEY_SIMPLEX,1.3,(0,0,0),3,cv2.LINE_AA)
-        spotifyController(int(prediction[0]))
-        time.sleep(1)
-        
+    else:
+        oldPre = -1
         
 if __name__ == "__main__":
     while cap.isOpened() and not stop_button or start_button:
@@ -102,6 +101,8 @@ if __name__ == "__main__":
         
         if cv2.waitKey(1) & 0xFF == ord('q') or stop_button and not start_button:
             break
+    print(int(prediction[0]))
+    
             
 cap.release()
 cv2.destroyAllWindows()
