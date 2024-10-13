@@ -21,24 +21,21 @@ cap = cv2.VideoCapture(0)
 oldPre=-1
 prediction = -1
 
+def keyPressed(keyboard, Key):
+    keyboard.press(Key)
+    keyboard.release(Key)
+
 def spotifyController(prediction):
     localKeyboard = keyboard
     match prediction:
         case 0:
-            localKeyboard.press(Key.space)
-            localKeyboard.release(Key.space)
+            keyPressed(localKeyboard,Key.media_play_pause)
             
         case 1:
-            localKeyboard.press(Key.ctrl_l)
-            localKeyboard.press(Key.right)
-            localKeyboard.release(Key.ctrl_l)
-            localKeyboard.release(Key.right)
-            
+            keyPressed(localKeyboard,Key.media_next)
+        
         case 2:
-            localKeyboard.press(Key.ctrl_l)
-            localKeyboard.press(Key.left)
-            localKeyboard.release(Key.ctrl_l)
-            localKeyboard.release(Key.left)
+            keyPressed(localKeyboard,Key.media_previous)
 
         case _:
             print("Unknown input")

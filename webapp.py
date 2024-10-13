@@ -27,31 +27,31 @@ temp_frame = st.empty()
 start_button = st.button("Start")
 stop_button = st.button("Stop")
 
+def keyPressed(keyboard, Key):
+    keyboard.press(Key)
+    keyboard.release(Key)
+
 def spotifyController(prediction):
     localKeyboard = keyboard
     match prediction:
         case 0:
-            localKeyboard.press(Key.space)
-            localKeyboard.release(Key.space)
+            pass
             
         case 1:
-            localKeyboard.press(Key.ctrl_l)
-            localKeyboard.press(Key.right)
-            localKeyboard.release(Key.ctrl_l)
-            localKeyboard.release(Key.right)
+            keyPressed(localKeyboard,Key.media_play_pause)
             
         case 2:
-            localKeyboard.press(Key.ctrl_l)
-            localKeyboard.press(Key.left)
-            localKeyboard.release(Key.ctrl_l)
-            localKeyboard.release(Key.left)
+            keyPressed(localKeyboard,Key.media_next)
+        
+        case 3:
+            keyPressed(localKeyboard,Key.media_previous)
 
         case _:
             print("Unknown input")
     
 def gestureRecog(frame):
     global oldPre, prediction
-    temp = []
+    temp  = [] 
     tempX = []
     tempY = []
     results = hands.process(frame)
