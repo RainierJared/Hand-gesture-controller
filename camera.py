@@ -1,10 +1,7 @@
 import cv2
-import os
 import pickle
-import time
 import numpy as np
 import mediapipe as mp
-import streamlit as st
 from pynput.keyboard import Key, Controller
 
 labels_dict={0: 'Pause/Play', 1: 'Next', 2: 'Previous'}
@@ -21,12 +18,6 @@ cap = cv2.VideoCapture(0)
 oldPre='9'
 prediction = '9'
 
-st.title("Gesture Controller for Spotify")
-temp_frame = st.empty()
-
-start_button = st.button("Start")
-stop_button = st.button("Stop")
-
 def keyPressed(keyboard, Key):
     keyboard.press(Key)
     keyboard.release(Key)
@@ -35,15 +26,12 @@ def spotifyController(prediction):
     localKeyboard = keyboard
     match prediction:
         case 0:
-            pass
-            
-        case 1:
             keyPressed(localKeyboard,Key.media_play_pause)
             
-        case 2:
+        case 1:
             keyPressed(localKeyboard,Key.media_next)
         
-        case 3:
+        case 2:
             keyPressed(localKeyboard,Key.media_previous)
 
         case _:
@@ -87,22 +75,17 @@ def gestureRecog(frame):
     else:
         oldPre = -1
         
-if __name__ == "__main__":
-    while cap.isOpened() and not stop_button or start_button:
-        success,img=cap.read()
-        frame=cv2.resize(img,(640,480))
-        frame=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        if not success:
-            st.write("Video Capture has ended.")
-            break
+class VideoCamera(object):
+    def __init__(self):
+        self.video = cv2.VideoCapture(0)
         
-        gestureRecog(frame)
-        temp_frame.image(frame,channels="RGB")
+    def __del__(self):
+        self.video.release()
         
-        if cv2.waitKey(1) & 0xFF == ord('q') or stop_button and not start_button:
-            break
-    print(int(prediction[0]))
-    
-            
-cap.release()
-cv2.destroyAllWindows()
+    def get_frame(self):
+        success, img = self.video.read()
+        
+        gestureRecog(img)
+        
+        success, jpeg = cv2.imencode('.jpg', img)
+        return jpeg.tobytes()
