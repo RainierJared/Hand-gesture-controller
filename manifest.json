@@ -1,0 +1,10 @@
+{
+    "name": "Gesture Controller for Spotify",
+    "short_name": "GestureController",
+    "scope": "/",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#fdfdfd",
+    "theme_color": "#db4938",
+    "orientation": "portrait-primary"
+}

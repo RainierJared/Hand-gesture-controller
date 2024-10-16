@@ -1,7 +1,8 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, send_file
 from camera import VideoCamera
 
 app = Flask(__name__)
+app._static_folder = 'static'
 
 def gen(camera):
     while True:
@@ -14,10 +15,18 @@ def gen(camera):
 def index():
     return render_template('index.html')
 
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_file('manifest.json', mimetype='statitc/manifest+json')
+
+@app.route('/sw.js')
+def serve_sw():
+    return send_file('sw.js', mimetype='application/javascript')
+
 @app.route('/video_feed')
 def video_feed():
     return Response(gen(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ =="__main__":
-    app.run(host='localhost', port='8000', debug=True)
+    app.run(host='172.20.10.2', port='8000', debug=True)
